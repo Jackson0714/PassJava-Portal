@@ -38,7 +38,7 @@
         prop="answer"
         header-align="center"
         align="center"
-        label="题目解答">
+        label="题目解答" show-overflow-tooltip=true>
       </el-table-column>
       <el-table-column
         prop="level"
@@ -134,7 +134,7 @@ export default {
       console.log(data)
       let {id, enable} = data
       this.$http({
-      url: this.$http.adornUrl('/question/question/update'),
+      url: this.$http.adornUrl('/question/v1/admin/question/update'),
       method: 'post',
       data: this.$http.adornData({id, enable}, false)
       }).then(({ data }) => {
@@ -149,7 +149,7 @@ export default {
     getDataList() {
       this.dataListLoading = true;
       this.$http({
-        url: this.$http.adornUrl("/question/question/list"),
+        url: this.$http.adornUrl("/question/v1/admin/question/list"),
         method: "get",
         params: this.$http.adornParams({
           page: this.pageIndex,
@@ -206,7 +206,7 @@ export default {
         }
       ).then(() => {
         this.$http({
-          url: this.$http.adornUrl("/question/question/delete"),
+          url: this.$http.adornUrl("/question/v1/admin/question/delete"),
           method: "post",
           data: this.$http.adornData(ids, false)
         }).then(({ data }) => {

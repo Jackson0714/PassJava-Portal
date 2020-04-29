@@ -11,7 +11,6 @@
         <el-input v-model="dataForm.comments" placeholder="备注"></el-input>
       </el-form-item>
       <el-form-item label="类型logo路径" prop="logoUrl">
-        <!-- <el-input v-model="dataForm.logoUrl" placeholder="logo路径"></el-input> -->
         <single-upload v-model="dataForm.logoUrl"></single-upload>
       </el-form-item>
     </el-form>

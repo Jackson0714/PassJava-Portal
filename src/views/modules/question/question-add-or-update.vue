@@ -4,27 +4,27 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="150px">
-    <el-form-item label="题目标题" prop="title">
-      <el-input v-model="dataForm.title" placeholder="题目标题"></el-input>
-    </el-form-item>
-    <el-form-item label="题目解答" prop="answer">
-      <el-input v-model="dataForm.answer" placeholder="题目解答"></el-input>
-    </el-form-item>
-    <el-form-item label="题目难度等级" prop="level">
-      <el-input v-model="dataForm.level" placeholder="题目难度等级"></el-input>
-    </el-form-item>
-    <el-form-item label="排序" prop="displayOrder">
-      <el-input v-model="dataForm.displayOrder" placeholder="排序"></el-input>
-    </el-form-item>
-    <el-form-item label="副标题" prop="subTitle">
-      <el-input v-model="dataForm.subTitle" placeholder="副标题"></el-input>
-    </el-form-item>
-    <el-form-item label="题目类型" prop="type">
-      <el-input v-model="dataForm.type" placeholder="题目类型"></el-input>
-    </el-form-item>
-    <el-form-item label="是否显示" prop="enable">
-      <el-switch v-model="dataForm.enable" :active-value=1 :inactive-value=0 active-color="#13ce66" inactive-color="#ff4949"></el-switch>
-    </el-form-item>
+      <el-form-item label="题目标题" prop="title">
+        <el-input v-model="dataForm.title" placeholder="题目标题"></el-input>
+      </el-form-item>
+      <el-form-item label="题目解答" prop="answer">
+        <el-input type="textarea" :rows="5" v-model="dataForm.answer" placeholder="题目解答"></el-input>
+      </el-form-item>
+      <el-form-item label="题目难度等级" prop="level">
+        <el-input v-model.number="dataForm.level" placeholder="题目难度等级"></el-input>
+      </el-form-item>
+      <el-form-item label="排序" prop="displayOrder">
+        <el-input v-model.number="dataForm.displayOrder" placeholder="排序"></el-input>
+      </el-form-item>
+      <el-form-item label="副标题" prop="subTitle">
+        <el-input v-model="dataForm.subTitle" placeholder="副标题"></el-input>
+      </el-form-item>
+      <el-form-item label="题目类型" prop="type">
+        <el-input v-model="dataForm.type" placeholder="题目类型"></el-input>
+      </el-form-item>
+      <el-form-item label="是否显示" prop="enable">
+        <el-switch v-model="dataForm.enable" :active-value=1 :inactive-value=0 active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+      </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -58,10 +58,32 @@ export default {
           { required: true, message: "题目解答不能为空", trigger: "blur" }
         ],
         level: [
-          { required: true, message: "题目难度等级不能为空", trigger: "blur" }
+          {
+            validator: (rule, value, callback) => {
+              if (value == "") {
+                callback(new Error("排序字段必须填写"));
+              } else if (!Number.isInteger(value) || value<0) {
+                callback(new Error("排序必须是一个大于等于0的整数"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "blur"
+          }
         ],
         displayOrder: [
-          { required: true, message: "排序不能为空", trigger: "blur" }
+          {
+            validator: (rule, value, callback) => {
+              if (value == "") {
+                callback(new Error("排序字段必须填写"));
+              } else if (!Number.isInteger(value) || value<0) {
+                callback(new Error("排序必须是一个大于等于0的整数"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "blur"
+          }
         ],
         subTitle: [
           { required: true, message: "副标题不能为空", trigger: "blur" }
@@ -84,7 +106,7 @@ export default {
         if (this.dataForm.id) {
           this.$http({
             url: this.$http.adornUrl(
-              `/question/question/info/${this.dataForm.id}`
+              `/question/v1/admin/question/info/${this.dataForm.id}`
             ),
             method: "get",
             params: this.$http.adornParams()
@@ -110,7 +132,7 @@ export default {
         if (valid) {
           this.$http({
             url: this.$http.adornUrl(
-              `/question/question/${!this.dataForm.id ? "save" : "update"}`
+              `/question/v1/admin/question/${!this.dataForm.id ? "save" : "update"}`
             ),
             method: "post",
             data: this.$http.adornData({
