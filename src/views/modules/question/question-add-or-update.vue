@@ -2,8 +2,16 @@
   <el-dialog
     :title="!dataForm.id ? '新增' : '修改'"
     :close-on-click-modal="false"
-    :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="150px">
+    :visible.sync="visible"
+    @closed="dialogClose"
+  >
+    <el-form
+      :model="dataForm"
+      :rules="dataRule"
+      ref="dataForm"
+      @keyup.enter.native="dataFormSubmit()"
+      label-width="150px"
+    >
       <el-form-item label="题目标题" prop="title">
         <el-input v-model="dataForm.title" placeholder="题目标题"></el-input>
       </el-form-item>
@@ -20,10 +28,21 @@
         <el-input v-model="dataForm.subTitle" placeholder="副标题"></el-input>
       </el-form-item>
       <el-form-item label="题目类型" prop="type">
-        <el-input v-model="dataForm.type" placeholder="题目类型"></el-input>
+        <el-select v-model="dataForm.type" placeholder="请选择" @change="chooseType">
+          <el-option v-for="item in types" :key="item.id" :label="item.comments" :value="item.id">
+            <span style="float: left">{{ item.comments }}</span>
+            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.type }}</span>
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="是否显示" prop="enable">
-        <el-switch v-model="dataForm.enable" :active-value=1 :inactive-value=0 active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+        <el-switch
+          v-model="dataForm.enable"
+          :active-value="1"
+          :inactive-value="0"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+        ></el-switch>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -37,6 +56,35 @@
 export default {
   data() {
     return {
+      types: [
+        {
+          id: 1,
+          type: "javaBasic",
+          comments: "Java基础"
+        },
+        {
+          id: 2,
+          type: "jvm",
+          comments: "jvm虚拟机"
+        },
+        {
+          id: 3,
+          type: "spring",
+          comments: "Spring核心原理"
+        },
+        {
+          id: 4,
+          type: "bigData",
+          comments: "大数据"
+        },
+        {
+          id: 5,
+          type: "thread",
+          comments: "多线程"
+        }
+      ],
+      value: "",
+      key: "",
       visible: false,
       dataForm: {
         id: 0,
@@ -46,6 +94,7 @@ export default {
         displayOrder: "",
         subTitle: "",
         type: "",
+        key: 0,
         enable: "",
         createTime: "",
         updateTime: ""
@@ -62,7 +111,7 @@ export default {
             validator: (rule, value, callback) => {
               if (value == "") {
                 callback(new Error("排序字段必须填写"));
-              } else if (!Number.isInteger(value) || value<0) {
+              } else if (!Number.isInteger(value) || value < 0) {
                 callback(new Error("排序必须是一个大于等于0的整数"));
               } else {
                 callback();
@@ -76,7 +125,7 @@ export default {
             validator: (rule, value, callback) => {
               if (value == "") {
                 callback(new Error("排序字段必须填写"));
-              } else if (!Number.isInteger(value) || value<0) {
+              } else if (!Number.isInteger(value) || value < 0) {
                 callback(new Error("排序必须是一个大于等于0的整数"));
               } else {
                 callback();
@@ -98,6 +147,12 @@ export default {
     };
   },
   methods: {
+    dialogClose() {
+      this.dataForm.type = ''
+    },
+    chooseType(e) {
+      console.log(e);
+    },
     init(id) {
       this.dataForm.id = id || 0;
       this.visible = true;
@@ -132,7 +187,9 @@ export default {
         if (valid) {
           this.$http({
             url: this.$http.adornUrl(
-              `/question/v1/admin/question/${!this.dataForm.id ? "save" : "update"}`
+              `/question/v1/admin/question/${
+                !this.dataForm.id ? "save" : "update"
+              }`
             ),
             method: "post",
             data: this.$http.adornData({
@@ -143,7 +200,7 @@ export default {
               displayOrder: this.dataForm.displayOrder,
               subTitle: this.dataForm.subTitle,
               type: this.dataForm.type,
-              enable:  Number(this.dataForm.enable),
+              enable: Number(this.dataForm.enable),
               createTime: this.dataForm.createTime,
               updateTime: this.dataForm.updateTime
             })
