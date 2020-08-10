@@ -59,7 +59,7 @@
         label="副标题">
       </el-table-column>
       <el-table-column
-        prop="type"
+        prop="typeComments"
         header-align="center"
         align="center"
         label="题目类型">
